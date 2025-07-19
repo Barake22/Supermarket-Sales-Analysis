@@ -1,0 +1,45 @@
+--  Calculate Net Revenue and Estimated Profit for Supermarket Sales
+--  Assumptions:
+-- Net Revenue = Total cost - Tax
+-- Assumed Cost of Goods Sold (COGS) = 70% of Net Revenue
+-- Profit = Net Revenue - COGS
+
+SELECT *, 
+    `Total cost` -`Tax 5%` AS `Net Revenue`,
+    (`Total cost` - `Tax 5%`) * 0.70 AS `COGS`,
+    (`Total cost` - `Tax 5%`) - ((`Total cost` - `Tax 5%`) * 0.70) AS Profit
+FROM supermarket_sales_cleaned
+WHERE 1;
+-- calculate total profit by branch
+SELECT `Branch`, 
+    SUM(`Total cost` - `Tax 5%` - ((`Total cost` - `Tax 5%`) * 0.70)) AS `Total Profit`
+FROM supermarket_sales_cleaned
+GROUP BY `Branch`;
+
+-- calculate profit by productline
+SELECT `Product line`, 
+    SUM(`Total cost` - `Tax 5%` - ((`Total cost` - `Tax 5%`) * 0.70)) AS `Total Profit`
+FROM supermarket_sales_cleaned
+GROUP BY `Product line`
+ORDER BY `Total Profit` DESC;
+-- shows which gender spends more or brings more profit
+SELECT `Gender`,
+    COUNT(*) AS `Transactions`,
+    SUM(`Total cost`) AS `Total Revenue`,
+    SUM((`Total cost` - `Tax 5%`) - ((`Total cost` - `Tax 5%`) * 0.70)) AS `Total Profit`
+FROM supermarket_sales_cleaned
+GROUP BY `Gender`;
+-- Are High Ratings More Frequent at Certain Times of Day?
+
+SELECT 
+    CASE 
+        WHEN HOUR(`Time`) BETWEEN 6 AND 11 THEN 'Morning'
+        WHEN HOUR(`Time`) BETWEEN 12 AND 16 THEN 'Afternoon'
+        WHEN HOUR(`Time`) BETWEEN 17 AND 21 THEN 'Evening'
+        ELSE 'Night'
+    END AS `Time of Day`,
+    `Grouping ratings`,
+    COUNT(*) AS `Rating count`
+FROM supermarket_sales_cleaned
+GROUP BY `Time of Day`, `Grouping ratings`
+ORDER BY `Time of Day`, `Grouping ratings`
